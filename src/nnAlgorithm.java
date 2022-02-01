@@ -19,8 +19,11 @@ public class nnAlgorithm {
 
         //Loop through each line of the training data and a nested loop which checks the smallest difference from the result of the eclidian distance.
 
-        //helper(trainData, testData);
+        int correctRecognitions = GetNumOfDigitsRecognised(trainData, testData);
+        int numOfRows = trainData.size();
 
+        double accuracy = (correctRecognitions / numOfRows) * 100;
+        System.out.println(accuracy);
     }
 
     public static ArrayList<ArrayList<Integer>> GetData(String filePath) {
@@ -49,15 +52,16 @@ public class nnAlgorithm {
         return fileData;
     }
 
-    public static Integer helper(ArrayList<ArrayList<Integer>> trainFile, ArrayList<ArrayList<Integer>> testFile) {
+    public static Integer GetNumOfDigitsRecognised(ArrayList<ArrayList<Integer>> trainFile, ArrayList<ArrayList<Integer>> testFile) {
         ArrayList<Integer> trainRow = new ArrayList();
         ArrayList<Integer> testRow = new ArrayList();
-        int trainDigit;
-        int testDigit;
+        int trainDigit; // The actual number represented by the values in the rows in the train file
+        int testDigit; // The actual number represented by the values in the rows in the test file
         double result;
-        double totalRowResult = 0;
-        int bestRowIndex;
-        int bestDigit;
+        double totalRowResult = 100;
+        double bestRowDistance = 100;
+        int bestRow;
+        int bestDigit= 100;
 
 
         for(int i = 0; i < trainFile.size(); i++) {
@@ -69,10 +73,23 @@ public class nnAlgorithm {
                 testDigit = testRow.get(testRow.size() - 1);
 
                 for(int k = 0, l = 0; k < trainFile.get(i).size() && l <  testFile.get(j).size(); k++, l++) {
+                    // Calculates the euclidean distance between each pair of cells in the rows being looped
                     result = (testFile.get(j).get(l) - trainFile.get(i).get(k)) * (testFile.get(j).get(l) - trainFile.get(i).get(k));
                     totalRowResult = totalRowResult + result;
-                    // check if the total row result is smaller than the existing one (also take note of the row index)
                 }
+
+                totalRowResult = Math.sqrt(totalRowResult);
+
+                // Checks if the row's euclidean distance is the least
+                if(totalRowResult < bestRowDistance){
+                    bestRowDistance = totalRowResult;
+                    bestRow = j;
+                    bestDigit = testDigit;
+                }
+            }
+
+            if(trainDigit == bestDigit){
+                numOfImagesRecognised++;
             }
         }
 

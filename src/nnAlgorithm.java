@@ -58,19 +58,20 @@ public class nnAlgorithm {
         int testDigit; // The actual number represented by the values in the rows in the test file
         double result;
         double totalRowResult = 0;
-        double bestRowDistance = 100;
-        int bestRow;
-        int bestDigit= 100;
         int numOfImagesRecognised = 0;
 
 
         for(int i = 0; i < trainFile.size(); i++) {
-            trainRow.clear();
+            double bestRowDistance = 1000;
+            int bestRow;
+            int bestDigit= 100;
+
+            trainRow= new ArrayList<Integer>();
             trainRow.addAll(trainFile.get(i));
             trainDigit = trainRow.get(trainRow.size() - 1);
 
             for(int j = 0; j < testFile.size(); j++) {
-                testRow.clear();
+                testRow = new ArrayList<Integer>();
                 testRow.addAll(testFile.get(j));
                 testDigit = testRow.get(testRow.size() - 1);
                 totalRowResult = 0;
@@ -79,9 +80,10 @@ public class nnAlgorithm {
                     double trainVal = trainFile.get(i).get(k);
                     double testVal = testFile.get(j).get(l);
                     // Calculates the euclidean distance between each pair of cells in the rows being looped
-                    result = Math.sqrt((testVal - trainVal) * (testVal - trainVal));
+                    result = (testVal - trainVal) * (testVal - trainVal);
                     totalRowResult = totalRowResult + result;
                 }
+                totalRowResult = Math.sqrt(totalRowResult);
 
                 // Checks if the row's euclidean distance is the least
                 if(totalRowResult < bestRowDistance){

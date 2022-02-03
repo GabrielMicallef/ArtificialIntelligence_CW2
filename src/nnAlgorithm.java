@@ -4,10 +4,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class nnAlgorithm {
-    public static int numOfImagesRecognised;
+
 
 
     public static void main(String[] args) throws IOException {
@@ -17,30 +18,28 @@ public class nnAlgorithm {
         ArrayList<ArrayList<Integer>> trainData = GetData(trainFile);
         ArrayList<ArrayList<Integer>> testData = GetData(testFile);
 
-        //Loop through each line of the training data and a nested loop which checks the smallest difference from the result of the eclidian distance.
-
         int correctRecognitions = GetNumOfDigitsRecognised(trainData, testData);
         int numOfRows = trainData.size();
 
-        double accuracy = (correctRecognitions / numOfRows) * 100;
-        System.out.println(accuracy);
+        float accuracy = (correctRecognitions * 100 / numOfRows) ;
+        System.out.println("Accuracy: " + accuracy + "%");
     }
 
     public static ArrayList<ArrayList<Integer>> GetData(String filePath) {
 
         File file = new File(filePath);
-        ArrayList<ArrayList<Integer> > fileData = new ArrayList<ArrayList<Integer> >();
-        ArrayList<Integer> lineData = new ArrayList<Integer>();
+        ArrayList<ArrayList<Integer> > fileData = new ArrayList();
+        ArrayList<Integer> lineData = new ArrayList();
 
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
             String line;
 
             while((line = br.readLine()) != null) {
-                lineData.clear();
+                lineData = new ArrayList<Integer>();
                 String[] strImgData = line.split(",");
                 for(int i = 0; i < strImgData.length; i++){
-                    lineData.add(Integer.parseInt(strImgData[i]));
+                     lineData.add(Integer.parseInt(strImgData[i]));
                 }
                 System.out.println(lineData);
                 fileData.add(lineData);
@@ -58,27 +57,31 @@ public class nnAlgorithm {
         int trainDigit; // The actual number represented by the values in the rows in the train file
         int testDigit; // The actual number represented by the values in the rows in the test file
         double result;
-        double totalRowResult = 100;
+        double totalRowResult = 0;
         double bestRowDistance = 100;
         int bestRow;
         int bestDigit= 100;
+        int numOfImagesRecognised = 0;
 
 
         for(int i = 0; i < trainFile.size(); i++) {
+            trainRow.clear();
             trainRow.addAll(trainFile.get(i));
             trainDigit = trainRow.get(trainRow.size() - 1);
 
             for(int j = 0; j < testFile.size(); j++) {
+                testRow.clear();
                 testRow.addAll(testFile.get(j));
                 testDigit = testRow.get(testRow.size() - 1);
+                totalRowResult = 0;
 
                 for(int k = 0, l = 0; k < trainFile.get(i).size() && l <  testFile.get(j).size(); k++, l++) {
+                    double trainVal = trainFile.get(i).get(k);
+                    double testVal = testFile.get(j).get(l);
                     // Calculates the euclidean distance between each pair of cells in the rows being looped
-                    result = (testFile.get(j).get(l) - trainFile.get(i).get(k)) * (testFile.get(j).get(l) - trainFile.get(i).get(k));
+                    result = Math.sqrt((testVal - trainVal) * (testVal - trainVal));
                     totalRowResult = totalRowResult + result;
                 }
-
-                totalRowResult = Math.sqrt(totalRowResult);
 
                 // Checks if the row's euclidean distance is the least
                 if(totalRowResult < bestRowDistance){

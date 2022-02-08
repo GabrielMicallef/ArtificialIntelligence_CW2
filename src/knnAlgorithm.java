@@ -4,8 +4,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 
 public class knnAlgorithm {
     public static ArrayList<NearestNeighbour> nns = new ArrayList();
@@ -63,6 +61,7 @@ public class knnAlgorithm {
 
         for(int i = 0; i < trainFile.size(); i++) {
             int bestDigit= 100;
+            nns.clear();
 
             trainRow= new ArrayList<Integer>();
             trainRow.addAll(trainFile.get(i));
@@ -85,13 +84,6 @@ public class knnAlgorithm {
                 totalRowResult = (int) Math.sqrt(totalRowResult);
 
                 nns.add(new NearestNeighbour(rowNo, totalRowResult, testDigit));
-
-                // Checks if the row's euclidean distance is the least
-                //if(totalRowResult < bestRowDistance){
-                //    bestRowDistance = totalRowResult;
-                //    bestRow = j;
-                //    bestDigit = testDigit;
-                //}
             }
 
             bestDigit = GetMostLikelyDigit();
@@ -105,43 +97,56 @@ public class knnAlgorithm {
     }
 
     public static Integer GetMostLikelyDigit(){
-        int n = 10;
+        int n = 5;
 
+        // Sorts the array by Distance (Ascending)
         Collections.sort(nns, new SortByDistance());
 
+        // Array to hold the objects with the smallest distances
         ArrayList<NearestNeighbour> bestNNs = new ArrayList();
 
+        // Adds the best objects to an array of objects NearestNeighbour
         for(int i = 0; i < n; i++){
             bestNNs.add(new NearestNeighbour(nns.get(i).rowID, nns.get(i).dist, nns.get(i).testDigit));
         }
 
-        Map<Integer, Integer> hp = new HashMap<>();
+        //create a hashmap to store the count of each element . key is number and value is count for the number
+        HashMap<Integer, Integer> numberMap = new HashMap<>();
 
-        for(int i = 0; i < n; i++)
-        {
-            int key = bestNNs.get(i).dist;
-            if(hp.containsKey(key))
-            {
-                int freq = hp.get(key);
-                freq++;
-                hp.put(key, freq);
+        int result = -1; //result will hold the most frequent element for the given array
+        int frequency = -1; //frequency is the count for the most frequent element
+
+        int value;
+
+        for (int i = 0; i < bestNNs.size(); i++) { //scan all elements of the array one by one
+
+            value = -1;
+            // set value as -1
+            if (numberMap.containsKey(bestNNs.get(i).testDigit)) {
+                value = numberMap.get(bestNNs.get(i).testDigit); // if the element is in the map, get the count
             }
-            else
-            {
-                hp.put(key, 1);
+            if (value != -1) {
+                // value is not -1 , that means the element is in the map. Increment the value and check if it is
+                // greater than the maximum
+                value += 1;
+                if (value > frequency) {
+                    //if the value is greater than frequency, it means it is the maximum value
+                    // till now. store it
+                    frequency = value;
+                    result = bestNNs.get(i).testDigit;
+                }
+
+                numberMap.put(bestNNs.get(i).testDigit, value); // put the updated value in the map
+            } else {
+                //element is not in the map. put it with value or count as 1
+                numberMap.put(bestNNs.get(i).testDigit, 1);
             }
+
         }
 
-        int max_count = 0, result = -1;
+        if (frequency == 1)
+            return -1;
 
-        for(Entry<Integer, Integer> val : hp.entrySet())
-        {
-            if (max_count < val.getValue())
-            {
-                result = val.getKey();
-                max_count = val.getValue();
-            }
-        }
         return result;
     }
 

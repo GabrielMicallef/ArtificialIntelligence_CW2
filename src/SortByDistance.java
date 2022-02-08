@@ -5,6 +5,4 @@ public class SortByDistance implements Comparator<NearestNeighbour> {
     {
         return a.dist - b.dist;
     }
-
-
 }

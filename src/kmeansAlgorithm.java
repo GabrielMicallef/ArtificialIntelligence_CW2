@@ -16,13 +16,14 @@ public class kmeansAlgorithm {
         ArrayList<ArrayList<Integer>> testData = GetData(testFile);
 
         // Pass the test array list to a method to get the average row for each digit 0-9
-
+        ArrayList<ArrayList<Integer>> avgTestData = GetAverageDataPerDigit(testData);
         // Pass the trail array and the new array list of average rows to a modified GetNumOfDigitsRecognised method
+        int correctRecognitions = GetNumOfDigitsRecognised(trainData, avgTestData);
+        int numOfRows = trainData.size();
 
+        double accuracy = (correctRecognitions * 100 / numOfRows) ;
+        System.out.println("Accuracy: " + accuracy + "%");
 
-
-//        float accuracy = (correctRecognitions * 100 / numOfRows) ;
-//        System.out.println("Accuracy: " + accuracy + "%");
     }
 
     public static ArrayList<ArrayList<Integer>> GetData(String filePath) {
@@ -49,6 +50,99 @@ public class kmeansAlgorithm {
         }
 
         return fileData;
+    }
+
+    public static ArrayList<ArrayList<Integer>> GetAverageDataPerDigit(ArrayList<ArrayList<Integer>> testData) {
+        ArrayList<ArrayList<Integer>> avgTestData = new ArrayList<ArrayList<Integer>>();
+
+        // loop through the digits 0 - 9
+        for(int i = 0; i < 10; i++){
+            ArrayList<ArrayList<Integer>> tempData = new ArrayList<ArrayList<Integer>>();
+
+            // loop through the rows, get the final index (digit) and check if it is = to i
+            // (to get all fo the rows which rows the same digit)
+            for(int j = 0; j < testData.size(); j++){
+                ArrayList<Integer> tempRow = new ArrayList<Integer>();
+                int tempDigit;
+
+                tempRow.addAll(testData.get(j));
+                tempDigit = tempRow.get(tempRow.size() - 1);
+
+                // if yes, add the row to the temp array list
+                if(tempDigit == i){
+                    tempData.add(tempRow);
+                }
+            }
+
+            ArrayList<Integer> avgTempRow = new ArrayList<Integer>();
+
+            // Get avg of each index of each column and add the result to the avgTestData Arraylist of ArrayLists
+            for(int j = 0; j < 64; j++){
+                int indexTotal = 0;
+
+                for(int k = 0; k < tempData.size(); k++){
+                    int currIndVal = tempData.get(k).get(j);
+
+                    indexTotal = indexTotal + currIndVal;
+                }
+
+                avgTempRow.add(indexTotal / tempData.size());
+            }
+            avgTempRow.add(i);
+
+            avgTestData.add(avgTempRow);
+        }
+
+        return avgTestData;
+    }
+
+    public static Integer GetNumOfDigitsRecognised(ArrayList<ArrayList<Integer>> trainFile, ArrayList<ArrayList<Integer>> testFile) {
+
+        ArrayList<Integer> trainRow;
+        ArrayList<Integer> testRow;
+        int trainDigit; // The actual number represented by the values in the rows in the train file
+        int testDigit; // The actual number represented by the values in the rows in the test file
+        double result;
+        double totalRowResult = 0;
+        int numOfImagesRecognised = 0;
+
+
+        for(int i = 0; i < trainFile.size(); i++) {
+            double bestRowDistance = 1000;
+            int bestDigit= 100;
+
+            trainRow= new ArrayList<Integer>();
+            trainRow.addAll(trainFile.get(i));
+            trainDigit = trainRow.get(trainRow.size() - 1);
+
+            for(int j = 0; j < testFile.size(); j++) {
+                testRow = new ArrayList<Integer>();
+                testRow.addAll(testFile.get(j));
+                testDigit = testRow.get(testRow.size() - 1);
+                totalRowResult = 0;
+
+                for(int k = 0, l = 0; k < trainFile.get(i).size() && l <  testFile.get(j).size(); k++, l++) {
+                    double trainVal = trainFile.get(i).get(k);
+                    double testVal = testFile.get(j).get(l);
+                    // Calculates the euclidean distance between each pair of cells in the rows being looped
+                    result = (testVal - trainVal) * (testVal - trainVal);
+                    totalRowResult = totalRowResult + result;
+                }
+                totalRowResult = Math.sqrt(totalRowResult);
+
+                // Checks if the row's euclidean distance is the least
+                if(totalRowResult < bestRowDistance){
+                    bestRowDistance = totalRowResult;
+                    bestDigit = testDigit;
+                }
+            }
+
+            if(trainDigit == bestDigit){
+                numOfImagesRecognised++;
+            }
+        }
+
+        return numOfImagesRecognised;
     }
 
 }

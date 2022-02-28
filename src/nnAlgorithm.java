@@ -9,8 +9,6 @@ import java.util.List;
 
 public class nnAlgorithm {
 
-
-
     public static void main(String[] args) throws IOException {
         String trainFile = "C:\\Users\\Gabriel\\IdeaProjects\\ArtificialIntelligence_CW2\\Train and Test Files\\DataSet1.csv";
         String testFile = "C:\\Users\\Gabriel\\IdeaProjects\\ArtificialIntelligence_CW2\\Train and Test Files\\DataSet2.csv";

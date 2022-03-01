@@ -10,8 +10,8 @@ import java.util.List;
 public class nnAlgorithm {
 
     public static void main(String[] args) throws IOException {
-        String trainFile = "C:\\Users\\Gabriel\\IdeaProjects\\ArtificialIntelligence_CW2\\Train and Test Files\\DataSet1.csv";
-        String testFile = "C:\\Users\\Gabriel\\IdeaProjects\\ArtificialIntelligence_CW2\\Train and Test Files\\DataSet2.csv";
+        String trainFile = "C:\\Users\\Gabriel\\IdeaProjects\\ArtificialIntelligence_CW2\\Train and Test Files\\DataSet2.csv";
+        String testFile = "C:\\Users\\Gabriel\\IdeaProjects\\ArtificialIntelligence_CW2\\Train and Test Files\\DataSet1.csv";
 
         ArrayList<ArrayList<Integer>> trainData = GetData(trainFile);
         ArrayList<ArrayList<Integer>> testData = GetData(testFile);
@@ -19,10 +19,11 @@ public class nnAlgorithm {
         int correctRecognitions = GetNumOfDigitsRecognised(trainData, testData);
         int numOfRows = trainData.size();
 
-        float accuracy = (correctRecognitions * 100 / numOfRows) ;
+        double accuracy = (correctRecognitions * 100 / numOfRows) ;
         System.out.println("Accuracy: " + accuracy + "%");
     }
 
+    // Gets all the data from the text file and places it into an ArrayList of Arraylists
     public static ArrayList<ArrayList<Integer>> GetData(String filePath) {
 
         File file = new File(filePath);
@@ -39,7 +40,6 @@ public class nnAlgorithm {
                 for(int i = 0; i < strImgData.length; i++){
                      lineData.add(Integer.parseInt(strImgData[i]));
                 }
-                System.out.println(lineData);
                 fileData.add(lineData);
             }
         } catch (IOException ex) {
@@ -49,6 +49,8 @@ public class nnAlgorithm {
         return fileData;
     }
 
+    // Loops through all of the rows in the training file whilst looping through the rows in the test file to get
+    // the row with the smallest Euclidian distance and checks if the digits from the pair of rows matches once a prediction is made.
     public static Integer GetNumOfDigitsRecognised(ArrayList<ArrayList<Integer>> trainFile, ArrayList<ArrayList<Integer>> testFile) {
 
         ArrayList<Integer> trainRow;

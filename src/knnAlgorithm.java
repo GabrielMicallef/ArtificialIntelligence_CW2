@@ -19,10 +19,11 @@ public class knnAlgorithm {
         int correctRecognitions = GetNumOfDigitsRecognised(trainData, testData);
         int numOfRows = trainData.size();
 
-        float accuracy = (correctRecognitions * 100 / numOfRows) ;
+        double accuracy = (correctRecognitions * 100 / numOfRows) ;
         System.out.println("Accuracy: " + accuracy + "%");
     }
 
+    // Gets all the data from the text file and places it into an ArrayList of Arraylists
     public static ArrayList<ArrayList<Integer>> GetData(String filePath) {
 
         File file = new File(filePath);
@@ -39,7 +40,6 @@ public class knnAlgorithm {
                 for(int i = 0; i < strImgData.length; i++){
                     lineData.add(Integer.parseInt(strImgData[i]));
                 }
-                System.out.println(lineData);
                 fileData.add(lineData);
             }
         } catch (IOException ex) {
@@ -49,6 +49,8 @@ public class knnAlgorithm {
         return fileData;
     }
 
+    // Loops through all of the rows in the training file whilst looping through the rows in the test file to get
+    // the row with the smallest Euclidean distance and checks if the digits from the pair of rows matches once a prediction is made.
     public static Integer GetNumOfDigitsRecognised(ArrayList<ArrayList<Integer>> trainFile, ArrayList<ArrayList<Integer>> testFile) {
         ArrayList<Integer> trainRow;
         ArrayList<Integer> testRow;
@@ -96,6 +98,7 @@ public class knnAlgorithm {
         return numOfImagesRecognised;
     }
 
+    // Gets the 5 rows with the smallest Euclidean distance and returns the most common digit from the rows as a prediction.
     public static Integer GetMostLikelyDigit(){
         int n = 5;
 
